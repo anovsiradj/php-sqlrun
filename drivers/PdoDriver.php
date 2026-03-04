@@ -49,14 +49,14 @@ class PdoDriver extends Driver
 		}
 	}
 
-	public function migrationExist($name)
+	public function migrationExist($name): bool
 	{
 		if (!$this->migration) {
 			return false;
 		}
 
 		$deklar = $this->connect->prepare(<<<SQL
-			SELECT * from migrations
+			SELECT 1 from migrations
 			WHERE migration=:migration
 		SQL);
 
@@ -64,16 +64,14 @@ class PdoDriver extends Driver
 			':migration' => $name,
 		]);
 
-		$result = $deklar->fetch() ?: null;
-		if (isset($result)) {
-			return true;
-		}
+		$result = $deklar->fetchColumn();
+		return (bool) $result;
 	}
 
-	public function migrationInsert($name)
+	public function migrationInsert($name): bool
 	{
 		if (!$this->migration) {
-			return;
+			return false;
 		}
 
 		$deklar = $this->connect->prepare(<<<SQL
@@ -87,6 +85,6 @@ class PdoDriver extends Driver
 			':created_at' => date('c'),
 		]);
 
-		return $result;
+		return (bool) $result;
 	}
 }

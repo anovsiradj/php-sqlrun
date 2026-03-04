@@ -7,7 +7,7 @@ use anovsiradj\sqlrun\runners\FileRunner;
 
 class SqlrunController extends \yii\console\Controller
 {
-	public function actionIndex()
+	public function actionFile()
 	{
 		$driver = new Yii2Driver;
 		$runner = new FileRunner;

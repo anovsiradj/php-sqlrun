@@ -61,7 +61,7 @@ class LaravelDriver extends Driver
 		}
 	}
 
-	public function migrationExist($name)
+	public function migrationExist($name): bool
 	{
 		if (!$this->migration) {
 			return false;
@@ -70,21 +70,17 @@ class LaravelDriver extends Driver
 		$table = $this->migrationTable();
 		$model = $this->connect->table($table)->where('migration', '=', $name)->first();
 
-		if (isset($model)) {
-			return true;
-		}
-
-		return false;
+		return isset($model);
 	}
 
-	public function migrationInsert($name)
+	public function migrationInsert($name): bool
 	{
 		if (!$this->migration) {
-			return;
+			return false;
 		}
 
 		$table = $this->migrationTable();
-		$this->connect->table($table)->insertOrIgnore([
+		return (bool) $this->connect->table($table)->insertOrIgnore([
 			'migration' => $name,
 			'batch' => 0, // TIMESTAMP
 		]);

@@ -1,6 +1,7 @@
 # mempersiapkan definisi koneksi database
 
 ```sh
+cd tests
 cp .env.default .env
 
 php ./pdo.php
@@ -8,9 +9,12 @@ php ./pdo.php
 
 # eksekusi migrasi yii2
 
+harus diingat, yii2 tidak ada driver mariadb, jadi harus selalu pakai mysql.
+
 ```sh
-# sekali (untuk generate tabel yii2_migrations)
-php ./tests/yii2.php migrate
+# sekali (generate migration table)
+php ./yii2.php migrate
+php ./yii2.php migrate/fresh --interactive=0
 
 # berkali
 php ./yii2.php sqlrun/file
@@ -19,8 +23,9 @@ php ./yii2.php sqlrun/file
 # eksekusi migrasi laravel
 
 ```sh
-# sekali (untuk generate tabel laravel_migrations)
+# sekali (generate migration table)
 php ./laravel.php migrate
+php ./laravel.php migrate:fresh
 php ./laravel.php migrate:install
 
 # berkali

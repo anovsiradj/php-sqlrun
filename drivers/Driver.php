@@ -6,6 +6,12 @@ class Driver
 {
 	public $logs = [];
 
+	/**
+	 * when true migrationExist/Insert actually perform queries
+	 * (used by FileRunner).  Drivers are free to ignore it.
+	 *
+	 * @var bool
+	 */
 	public $migration = false;
 
 	public function logs($key)
