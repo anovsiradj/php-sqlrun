@@ -2,16 +2,15 @@
 
 ### todos (grouped and ordered by priority)
 
-must:
+**MUST:**
 
-may:
+**MAY:**
 - pdo sqlite driver
-- mysql driver
 - sqlite driver
 - sqlsrv driver
 - pdo firebird driver
 
-done:
+**DONE:**
 - has loader to load and read files
 - can using `.sql` and `.php`
 - pdo mysql/mariadb driver
