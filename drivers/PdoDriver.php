@@ -12,9 +12,20 @@ class PdoDriver extends Driver
 	/**
 	 * @param PDO $connect
 	 */
+	public function __construct($connect = null)
+	{
+		if ($connect) {
+			$this->connect($connect);
+		}
+	}
+
+	/**
+	 * @param PDO $connect
+	 */
 	public function connect($connect)
 	{
 		$this->connect = $connect;
+		$this->migrationInit();
 	}
 
 	public function query($sql)
@@ -56,12 +67,12 @@ class PdoDriver extends Driver
 		}
 
 		$deklar = $this->connect->prepare(<<<SQL
-			SELECT 1 from migrations
-			WHERE migration=:migration
+			SELECT 1 from migration
+			WHERE id=:id
 		SQL);
 
 		$deklar->execute([
-			':migration' => $name,
+			':id' => $name,
 		]);
 
 		$result = $deklar->fetchColumn();
@@ -75,16 +86,30 @@ class PdoDriver extends Driver
 		}
 
 		$deklar = $this->connect->prepare(<<<SQL
-			INSERT INTO
-			migrations (migration, created_at)
-			VALUES (:migration, :created_at)
+			INSERT INTO migration (id, at) VALUES (:id, :at)
 		SQL);
 
 		$result = $deklar->execute([
-			':migration' => $name,
-			':created_at' => date('c'),
+			':id' => $name,
+			':at' => date('Y-m-d H:i:s'),
 		]);
 
 		return (bool) $result;
+	}
+
+	/**
+	 * @todo database agnostic
+	 * @return bool
+	 */
+	public function migrationInit(): bool
+	{
+		$sql = <<<'SQL'
+		CREATE TABLE IF NOT EXISTS migration (
+			`id` VARCHAR(256) PRIMARY KEY,
+			`at` DATETIME
+		);
+		SQL;
+
+		return $this->query($sql);
 	}
 }

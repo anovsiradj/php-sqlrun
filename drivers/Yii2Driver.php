@@ -9,6 +9,9 @@ class Yii2Driver extends Driver
 {
 	public Connection $connect;
 
+	/**
+	 * @param Connection $connect
+	 */
 	public function __construct($connect = null)
 	{
 		if (empty($connect) && Yii::$app->has('db')) {
@@ -27,7 +30,14 @@ class Yii2Driver extends Driver
 		$this->connect = $connect;
 	}
 
-	public function query($sql)
+	public function migrationTable(): string
+	{
+		$table = Yii::$app->controllerMap['migrate']['migrationTable'] ?? null;
+		$table ??= 'migrations';
+		return $table;
+	}
+
+	public function query($sql): bool
 	{
 		if (empty($sql) || trim($sql) === '') {
 			$this->logs[] = ['query' => $sql, 'error' => 'empty'];
@@ -70,5 +80,41 @@ class Yii2Driver extends Driver
 
 			return false;
 		}
+	}
+
+	public function migrationExist($name): bool
+	{
+		if (!$this->migration) {
+			return false;
+		}
+
+		$table = $this->migrationTable();
+		$sql = <<<SQL
+			SELECT 1 FROM {$table} WHERE version = :version
+		SQL;
+		$result = $this->connect->createCommand($sql)
+			->bindValue(':version', $name)
+			->queryScalar();
+
+		return (bool) $result;
+	}
+
+	public function migrationInsert($name): bool
+	{
+		if (!$this->migration) {
+			return false;
+		}
+
+		$table = $this->migrationTable();
+		$result = $this->connect
+			->createCommand(<<<SQL
+				INSERT INTO {$table} (version, apply_time)
+				VALUES (:version, :apply_time)
+			SQL)->bindValues([
+					':version' => $name,
+					':apply_time' => time(),
+				])
+			->execute();
+		return (bool) $result;
 	}
 }

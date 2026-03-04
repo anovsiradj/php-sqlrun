@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class LaravelDriver extends Driver
 {
-	public $migration = true;
-
 	public ConnectionInterface $connect;
 
+	/**
+	 * @param ConnectionInterface $connect
+	 */
 	public function __construct($connect = null)
 	{
 		if (empty($connect)) {
@@ -21,6 +22,14 @@ class LaravelDriver extends Driver
 		if ($connect) {
 			$this->connect($connect);
 		}
+	}
+
+	/**
+	 * @param ConnectionInterface $connect
+	 */
+	public function connect($connect)
+	{
+		$this->connect = $connect;
 	}
 
 	public function migrationTable()
@@ -34,14 +43,6 @@ class LaravelDriver extends Driver
 			throw new Exception(__FUNCTION__, 1);
 		}
 		return $table;
-	}
-
-	/**
-	 * @param ConnectionInterface $connect
-	 */
-	public function connect($connect)
-	{
-		$this->connect = $connect;
 	}
 
 	public function query($sql)
@@ -82,7 +83,7 @@ class LaravelDriver extends Driver
 		$table = $this->migrationTable();
 		return (bool) $this->connect->table($table)->insertOrIgnore([
 			'migration' => $name,
-			'batch' => 0, // TIMESTAMP
+			'batch' => time(),
 		]);
 	}
 }

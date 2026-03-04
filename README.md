@@ -4,44 +4,7 @@ migrasi SQL satu arah.
 
 ### usage
 
-This library provides a lightweight way to execute SQL or PHP
-dependency scripts in a controlled one‑directional migration flow.  At its
-core there are two concepts:
-
-1. **Driver** – handles the database connection and implements a handful of
-   methods such as `query()`, `migrationExist()` and `migrationInsert()`.
-2. **Runner** – walks a directory or file and invokes the driver for each
-   item.  The default `FileRunner` knows how to process `.sql` and `.php`
-   files.
-
-Basic example using PDO (MySQL/MariaDB, PostgreSQL, SQLite, etc.):
-
-```php
-use anovsiradj\sqlrun\drivers\PdoDriver;
-use anovsiradj\sqlrun\runners\FileRunner;
-
-require __DIR__ . '/vendor/autoload.php';
-
-$pdo = new \PDO('mysql:host=localhost;dbname=test', 'user', 'pass');
-$driver = new PdoDriver;
-$driver->connect($pdo);
-$driver->migration = true;          // track executed migrations
-
-// optional: attach a PSR‑3 logger (monolog, framework logger, etc.)
-$driver->setLogger(new \Psr\Log\NullLogger());
-
-$runner = new FileRunner;
-$runner->driver($driver);
-
-// execute a pair of directories: structures, then patches, then contents
-$runner->run("/path/to/structures.sql");
-$runner->runDir("/path/to/patches");
-$runner->run("/path/to/contents.sql");
-```
-
-You can also use the `Yii2Driver` and `LaravelDriver` if you are running
-inside those frameworks; they will pick up the connection from the
-application by default.  See `tests/*.php` for tiny example scripts.
+see `./tests/`
 
 #### `.sql` vs `.php` files
 
@@ -83,7 +46,9 @@ include enough detail to reproduce the problem.
 
 ---
 
-### todos (grouped and ordered by priority)
+### TODOs
+
+(grouped and ordered by priority)
 
 **MUST:**
 

@@ -3,7 +3,11 @@
 ```sh
 cd tests
 cp .env.default .env
+```
 
+# eksekusi migrasi pdo
+
+```sh
 php ./pdo.php
 ```
 
