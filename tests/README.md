@@ -20,6 +20,7 @@ eksekusi migrasi laravel
 
 ```sh
 # sekali (untuk generate tabel laravel_migrations)
+php ./laravel.php migrate
 php ./laravel.php migrate:install
 
 # berkali

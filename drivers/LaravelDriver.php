@@ -2,6 +2,7 @@
 
 namespace anovsiradj\sqlrun\drivers;
 
+use Exception;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -12,9 +13,27 @@ class LaravelDriver extends Driver
 
 	public ConnectionInterface $connect;
 
-	public function __construct()
+	public function __construct($connect = null)
 	{
-		$this->connect(DB::connection());
+		if (empty($connect)) {
+			$connect = DB::connection();
+		}
+		if ($connect) {
+			$this->connect($connect);
+		}
+	}
+
+	public function migrationTable()
+	{
+		$table = config('database.migrations');
+		if (is_array($table)) {
+			$table = $table['table'] ?? null;
+		}
+
+		if (empty($table)) {
+			throw new Exception(__FUNCTION__, 1);
+		}
+		return $table;
 	}
 
 	/**
@@ -48,12 +67,14 @@ class LaravelDriver extends Driver
 			return false;
 		}
 
-		$table = config('database.migrations');
+		$table = $this->migrationTable();
 		$model = $this->connect->table($table)->where('migration', '=', $name)->first();
 
 		if (isset($model)) {
 			return true;
 		}
+
+		return false;
 	}
 
 	public function migrationInsert($name)
@@ -62,10 +83,10 @@ class LaravelDriver extends Driver
 			return;
 		}
 
-		$table = config('database.migrations');
+		$table = $this->migrationTable();
 		$this->connect->table($table)->insertOrIgnore([
 			'migration' => $name,
-			'batch' => time(), // TIMESTAMP
+			'batch' => 0, // TIMESTAMP
 		]);
 	}
 }

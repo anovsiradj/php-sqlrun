@@ -1,5 +1,17 @@
 <?php
 
+$mysql = [
+	'driver' => 'mariadb',
+	'host' => env('LARAVEL_HOST'),
+	'port' => env('LARAVEL_PORT'),
+	'database' => env('LARAVEL_DBNAME'),
+	'username' => env('LARAVEL_USERNAME'),
+	'password' => env('LARAVEL_PASSWORD'),
+	'prefix_indexes' => true,
+	'strict' => true,
+	'engine' => null,
+];
+
 return [
 	'default' => env('LARAVEL_DRIVER'),
 
@@ -9,19 +21,15 @@ return [
 			'database' => env('SQLITE_FILE'),
 			'foreign_key_constraints' => env('LARAVEL_FOREIGN_KEYS', true),
 		],
-		'mysql' => [
-			'driver' => 'mysql',
+		'mariadb' => array_merge($mysql, [
+			'driver' => 'mariadb',
 			'host' => env('LARAVEL_HOST'),
 			'port' => env('LARAVEL_PORT'),
 			'database' => env('LARAVEL_DBNAME'),
 			'username' => env('LARAVEL_USERNAME'),
 			'password' => env('LARAVEL_PASSWORD'),
-			'charset' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'prefix_indexes' => true,
-			'strict' => true,
-			'engine' => null,
-		],
+		]),
+		'mysql' => $mysql,
 		'pgsql' => [
 			'driver' => 'pgsql',
 			'host' => env('LARAVEL_HOST'),
@@ -36,5 +44,11 @@ return [
 		],
 	],
 
+	// <=v10
 	'migrations' => 'laravel_migrations',
+	// >=v11
+	'migrations' => [
+		'table' => 'laravel_migrations',
+		'update_date_on_publish' => true,
+	],
 ];

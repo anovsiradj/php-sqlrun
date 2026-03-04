@@ -9,10 +9,13 @@ class Yii2Driver extends Driver
 {
 	public Connection $connect;
 
-	public function __construct()
+	public function __construct($connect = null)
 	{
-		if (Yii::$app->has('db')) {
-			$this->connect(Yii::$app->get('db'));
+		if (empty($connect) && Yii::$app->has('db')) {
+			$connect = Yii::$app->get('db');
+		}
+		if ($connect) {
+			$this->connect($connect);
 		}
 	}
 
