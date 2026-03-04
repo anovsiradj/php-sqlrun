@@ -6,7 +6,7 @@ use Exception;
 
 class FileRunner extends Runner
 {
-	public function run($file, $migrationIgnore = false)
+	public function run($file, $migration = true)
 	{
 		if (empty($file) || trim($file) === '') {
 			echo '[SKIP] file is empty', PHP_EOL;
@@ -19,15 +19,15 @@ class FileRunner extends Runner
 		}
 
 		if (preg_match('/\.sql$/i', $file) === 1) {
-			$this->runSql($file, $migrationIgnore);
+			$this->runSql($file, $migration);
 		} elseif (preg_match('/\.php$/i', $file) === 1) {
-			$this->runPhp($file, $migrationIgnore);
+			$this->runPhp($file, $migration);
 		} else {
 			echo "[SKIP] unknown file {$file}", PHP_EOL;
 		}
 	}
 
-	public function runDir($dir, $migrationIgnore = false)
+	public function runDir($dir, $migration = true)
 	{
 		if (empty($dir) || trim($dir) === '') {
 			echo '[SKIP] dir is empty', PHP_EOL;
@@ -41,13 +41,13 @@ class FileRunner extends Runner
 
 		$files = glob($dir . '/{,*/}*', GLOB_BRACE);
 		foreach ($files as $file) {
-			$this->run($file, $migrationIgnore);
+			$this->run($file, $migration);
 		}
 	}
 
-	public function runSql($file, $migrationIgnore = false)
+	public function runSql($file, $migration = true)
 	{
-		if (!$migrationIgnore && $this->driver->migrationExist(basename($file))) {
+		if ($migration && $this->driver->migrationExist(basename($file))) {
 			echo "[MGRT] {$file}", PHP_EOL;
 			return;
 		}
@@ -55,7 +55,7 @@ class FileRunner extends Runner
 		$sql = file_get_contents($file);
 
 		if ($this->driver->query($sql)) {
-			if (!$migrationIgnore) {
+			if ($migration) {
 				$this->driver->migrationInsert(basename($file));
 			}
 			echo "[DONE] {$file}", PHP_EOL;
@@ -64,9 +64,9 @@ class FileRunner extends Runner
 		}
 	}
 
-	public function runPhp($file, $migrationIgnore = false)
+	public function runPhp($file, $migration = true)
 	{
-		if (!$migrationIgnore && $this->driver->migrationExist(basename($file))) {
+		if ($migration && $this->driver->migrationExist(basename($file))) {
 			echo "[MGRT] {$file}", PHP_EOL;
 			return;
 		}
@@ -82,7 +82,7 @@ class FileRunner extends Runner
 			if ($result === false) {
 				echo "[FAIL] {$file}", PHP_EOL;
 			} else {
-				if (!$migrationIgnore) {
+				if ($migration) {
 					$this->driver->migrationInsert(basename($file));
 				}
 				echo "[DONE] {$file}", PHP_EOL;

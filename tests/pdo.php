@@ -11,9 +11,9 @@ $driver = new PdoDriver($connect);
 $runner = new FileRunner;
 $runner->driver($driver);
 
-$runner->run("{$env['FILE_DIR']}/structures.sql");
+$runner->run("{$env['FILE_DIR']}/structures.sql", false);
 $runner->runDir("{$env['FILE_DIR']}/patches");
-$runner->run("{$env['FILE_DIR']}/contents.sql");
+$runner->run("{$env['FILE_DIR']}/contents.sql", false);
 
 // dump($driver->logs);
 dump($driver->logs('error'));

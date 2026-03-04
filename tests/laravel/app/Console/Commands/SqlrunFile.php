@@ -11,12 +11,10 @@ class SqlrunFile extends \Illuminate\Console\Command
 
 	public function handle()
 	{
-		$runner = new FileRunner;
-		$runner->driver(new LaravelDriver);
-
-		$runner->run("{$_ENV['FILE_DIR']}/structures.sql", true);
+		$runner = new FileRunner(new LaravelDriver);
+		$runner->run("{$_ENV['FILE_DIR']}/structures.sql", false);
 		$runner->runDir("{$_ENV['FILE_DIR']}/patches");
-		$runner->run("{$_ENV['FILE_DIR']}/contents.sql", true);
+		$runner->run("{$_ENV['FILE_DIR']}/contents.sql", false);
 
 		dump($runner->driver->logs('error'));
 	}

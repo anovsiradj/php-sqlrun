@@ -38,7 +38,6 @@ class LaravelDriver extends Driver
 		if (is_array($table)) {
 			$table = $table['table'] ?? null;
 		}
-
 		if (empty($table)) {
 			throw new Exception(__FUNCTION__, 1);
 		}

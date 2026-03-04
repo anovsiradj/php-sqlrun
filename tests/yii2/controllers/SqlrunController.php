@@ -9,14 +9,12 @@ class SqlrunController extends \yii\console\Controller
 {
 	public function actionFile()
 	{
-		$driver = new Yii2Driver;
-		$runner = new FileRunner;
-		$runner->driver($driver);
+		$runner = new FileRunner(new Yii2Driver);
 
-		$runner->run("{$_ENV['FILE_DIR']}/structures.sql");
+		$runner->run("{$_ENV['FILE_DIR']}/structures.sql", false);
 		$runner->runDir("{$_ENV['FILE_DIR']}/patches");
-		$runner->run("{$_ENV['FILE_DIR']}/contents.sql");
+		$runner->run("{$_ENV['FILE_DIR']}/contents.sql", false);
 
-		dump($driver->logs('error'));
+		dump($runner->driver->logs('error'));
 	}
 }
