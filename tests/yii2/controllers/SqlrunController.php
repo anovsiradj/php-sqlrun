@@ -11,9 +11,10 @@ class SqlrunController extends \yii\console\Controller
 	{
 		$runner = new FileRunner(new Yii2Driver);
 
-		$runner->run("{$_ENV['FILE_DIR']}/structures.sql", false);
-		$runner->runDir("{$_ENV['FILE_DIR']}/patches");
-		$runner->run("{$_ENV['FILE_DIR']}/contents.sql", false);
+		$dir = $_ENV['MIGRATION_DIR'];
+		$runner->run("{$dir}/structures.sql", false);
+		$runner->runDir("{$dir}/patches");
+		$runner->run("{$dir}/contents.sql", false);
 
 		dump($runner->driver->logs('error'));
 	}

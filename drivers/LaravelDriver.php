@@ -2,7 +2,6 @@
 
 namespace anovsiradj\sqlrun\drivers;
 
-use Exception;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -38,25 +37,36 @@ class LaravelDriver extends Driver
 		if (is_array($table)) {
 			$table = $table['table'] ?? null;
 		}
+		if (empty($table) && isset($this->migrationTable)) {
+			$table = $this->migrationTable;
+		}
 		if (empty($table)) {
-			throw new Exception(__FUNCTION__, 1);
+			$table = 'migrations'; // DEFAULT
 		}
 		return $table;
 	}
 
-	public function query($sql)
+	public function query($sql): bool
 	{
 		if (empty($sql) || trim($sql) === '') {
-			$this->logs[] = ['query' => $sql, 'error' => 'empty'];
+			$this->log([
+				'query' => $sql,
+				'error' => 'empty',
+			]);
 			return false;
 		}
 
 		try {
 			$result = $this->connect->unprepared($sql);
-			$this->logs[] = ['query' => $sql, 'result' => $result];
+			$this->log([
+				'query' => $sql,
+				'result' => $result,
+			]);
 			return $result;
 		} catch (QueryException $e) {
-			$this->logs[] = ['query' => $sql, 'error' => $e->getMessage()];
+			$this->log([
+				'query' => $sql,
+			], $e);
 			return false;
 		}
 	}

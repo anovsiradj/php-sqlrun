@@ -2,6 +2,7 @@
 
 namespace anovsiradj\sqlrun\drivers;
 
+use Exception;
 use PDO;
 use PDOException;
 
@@ -28,34 +29,38 @@ class PdoDriver extends Driver
 		$this->migrationInit();
 	}
 
-	public function query($sql)
+	public function query($sql): bool
 	{
 		if (empty($sql) || trim($sql) === '') {
-			$this->logs[] = ['query' => $sql, 'error' => 'empty'];
+			$this->log([
+				'query' => $sql,
+				'error' => 'empty',
+			]);
 			return false;
 		}
 
 		try {
 			$result = $this->connect->exec($sql);
 
-			$log = [
-				'query' => $sql,
-				'result' => $result,
-			];
-
 			if ($result !== false) {
-				$this->logs[] = $log;
+				$this->log([
+					'query' => $sql,
+					'result' => $result,
+				]);
 			} else {
-				$this->logs[] = array_merge($log, [
-					'error' => $this->connect->errorInfo()[2] ?? null,
+				$error = $this->connect->errorInfo();
+				$this->log([
+					'query' => $sql,
+					'result' => $result,
+					'error' => $error[2] ?? null,
+					'code' => $error[1] ?? null,
 				]);
 			}
 			return ($result !== false);
 		} catch (PDOException $e) {
-			$this->logs[] = [
+			$this->log([
 				'query' => $sql,
-				'error' => $e->errorInfo[2] ?? null,
-			];
+			], $e);
 			return false;
 		}
 	}
@@ -97,18 +102,20 @@ class PdoDriver extends Driver
 		return (bool) $result;
 	}
 
-	/**
-	 * @todo database agnostic
-	 * @return bool
-	 */
 	public function migrationInit(): bool
 	{
-		$sql = <<<'SQL'
-		CREATE TABLE IF NOT EXISTS migration (
-			`id` VARCHAR(256) PRIMARY KEY,
-			`at` DATETIME
-		);
-		SQL;
+		$driver = $this->connect->getAttribute(PDO::ATTR_DRIVER_NAME);
+		$file = __DIR__ . "/../migrations/pdo/{$driver}.sql";
+		if (!file_exists($file) || !is_file($file)) {
+			$this->log(['message' => "migration init file not found: {$file}"]);
+			return false;
+		}
+
+		$sql = file_get_contents($file);
+		if (empty($sql) || trim($sql) === '') {
+			$this->log(['message' => 'migration init sql is empty']);
+			return false;
+		}
 
 		return $this->query($sql);
 	}

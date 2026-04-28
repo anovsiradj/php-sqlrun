@@ -30,53 +30,64 @@ class Yii2Driver extends Driver
 		$this->connect = $connect;
 	}
 
-	public function migrationTable(): string
+	public function migrationTable()
 	{
 		$table = Yii::$app->controllerMap['migrate']['migrationTable'] ?? null;
-		$table ??= 'migrations';
+		if (empty($table) && isset($this->migrationTable)) {
+			$table = $this->migrationTable;
+		}
+		if (empty($table)) {
+			$table = 'migration'; // DEFAULT
+		}
 		return $table;
 	}
 
 	public function query($sql): bool
 	{
 		if (empty($sql) || trim($sql) === '') {
-			$this->logs[] = ['query' => $sql, 'error' => 'empty'];
+			$this->log([
+				'query' => $sql,
+				'error' => 'empty',
+			]);
 			return false;
 		}
 
 		try {
 			$result = $this->connect->masterPdo->exec($sql);
 			if ($result === false) {
-				$this->logs[] = [
-					'error' => $this->connect->masterPdo->errorInfo(),
+				$error = $this->connect->masterPdo->errorInfo();
+				$this->log([
+					'query' => $sql,
 					'result' => $result,
-				];
+					'error' => $error[2] ?? null,
+					'code' => $error[1] ?? null,
+				]);
 
 				return false;
 			}
 
+			$this->log([
+				'query' => $sql,
+				'result' => $result,
+			]);
+
 			return true;
 		} catch (\yii\db\Exception $e) {
-			$this->logs[] = [
+			$this->log([
 				'query' => $sql,
-				'catch' => \yii\db\Exception::class,
-				'error' => $e->getMessage(),
-			];
+			], $e);
 
 			return false;
 		} catch (\PDOException $e) {
-			$this->logs[] = [
+			$this->log([
 				'query' => $sql,
-				'catch' => \PDOException::class,
-				'error' => $e->getMessage(),
-			];
+			], $e);
 
 			return false;
 		} catch (\Exception $e) {
-			$this->logs[] = [
+			$this->log([
 				'query' => $sql,
-				'catch' => get_class($e),
-			];
+			], $e);
 
 			return false;
 		}
@@ -111,9 +122,9 @@ class Yii2Driver extends Driver
 				INSERT INTO {$table} (version, apply_time)
 				VALUES (:version, :apply_time)
 			SQL)->bindValues([
-					':version' => $name,
-					':apply_time' => time(),
-				])
+				':version' => $name,
+				':apply_time' => time(),
+			])
 			->execute();
 		return (bool) $result;
 	}

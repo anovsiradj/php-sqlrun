@@ -1,7 +1,6 @@
 <?php
 
 $mysql = [
-	'driver' => 'mariadb',
 	'host' => env('LARAVEL_HOST'),
 	'port' => env('LARAVEL_PORT'),
 	'database' => env('LARAVEL_DBNAME'),
@@ -23,13 +22,10 @@ return [
 		],
 		'mariadb' => array_merge($mysql, [
 			'driver' => 'mariadb',
-			'host' => env('LARAVEL_HOST'),
-			'port' => env('LARAVEL_PORT'),
-			'database' => env('LARAVEL_DBNAME'),
-			'username' => env('LARAVEL_USERNAME'),
-			'password' => env('LARAVEL_PASSWORD'),
 		]),
-		'mysql' => $mysql,
+		'mysql' => array_merge($mysql, [
+			'driver' => 'mysql',
+		]),
 		'pgsql' => [
 			'driver' => 'pgsql',
 			'host' => env('LARAVEL_HOST'),

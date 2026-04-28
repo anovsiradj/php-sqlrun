@@ -2,16 +2,43 @@
 
 namespace anovsiradj\sqlrun\drivers;
 
+use Exception;
+use Throwable;
+
 class Driver
 {
 	public $logs = [];
 
 	public $migration = true;
+	public $migrationTable = null;
+
+	public function log(array $data = [], $exception = null)
+	{
+		if ($exception instanceof Exception || $exception instanceof Throwable) {
+			$data = array_merge([
+				'error' => $exception->getMessage(),
+				'file' => $exception->getFile(),
+				'line' => $exception->getLine(),
+				'code' => $exception->getCode(),
+			], $data);
+		}
+
+		$this->logs[] = array_merge([
+			'driver' => static::class,
+			'query' => null,
+			'result' => null,
+			'context' => null,
+			'error' => null,
+			'file' => null,
+			'line' => null,
+			'code' => null,
+		], $data);
+	}
 
 	public function logs($key)
 	{
 		$logs = array_map(fn($log) => $log[$key] ?? null, $this->logs);
-		$logs = array_filter($logs, fn($log) => isset($log) && trim($log) !== '');
+		$logs = array_filter($logs, fn($log) => isset($log));
 		return $logs;
 	}
 
@@ -20,37 +47,66 @@ class Driver
 	 */
 	public function query($sql)
 	{
-		$this->logs[] = array_merge(func_get_args(), ['error' => '[UNIMPLEMENTED] query']);
+		$this->log([
+			'query' => $sql,
+			'error' => sprintf('[UNIMPLEMENTED] %s', __FUNCTION__),
+		]);
 		return false;
 	}
 
 	public function fetchOne($sql, $params = [])
 	{
-		$this->logs[] = array_merge(func_get_args(), ['error' => '[UNIMPLEMENTED] fetchOne']);
+		$this->log([
+			'query' => $sql,
+			'error' => sprintf('[UNIMPLEMENTED] %s', __FUNCTION__),
+			'context' => ['params' => $params],
+		]);
 		return null;
 	}
 
 	public function fetchAll($sql, $params = [])
 	{
-		$this->logs[] = array_merge(func_get_args(), ['error' => '[UNIMPLEMENTED] fetchAll']);
+		$this->log([
+			'query' => $sql,
+			'error' => sprintf('[UNIMPLEMENTED] %s', __FUNCTION__),
+			'context' => ['params' => $params],
+		]);
 		return null;
 	}
 
 	public function fetchScalar($sql, $params = [])
 	{
-		$this->logs[] = array_merge(func_get_args(), ['error' => '[UNIMPLEMENTED] fetchScalar']);
+		$this->log([
+			'query' => $sql,
+			'error' => sprintf('[UNIMPLEMENTED] %s', __FUNCTION__),
+			'context' => ['params' => $params],
+		]);
 		return null;
 	}
 
 	public function migrationExist($name)
 	{
-		$this->logs[] = array_merge(func_get_args(), ['error' => '[UNIMPLEMENTED] migrationExist']);
+		$this->log([
+			'error' => sprintf('[UNIMPLEMENTED] %s', __FUNCTION__),
+			'context' => ['name' => $name],
+		]);
 		return null;
 	}
 
 	public function migrationInsert($name)
 	{
-		$this->logs[] = array_merge(func_get_args(), ['error' => '[UNIMPLEMENTED] migrationInsert']);
+		$this->log([
+			'error' => sprintf('[UNIMPLEMENTED] %s', __FUNCTION__),
+			'context' => ['name' => $name],
+		]);
+		return null;
+	}
+
+	public function migrationTable()
+	{
+		$this->log([
+			'error' => sprintf('[UNIMPLEMENTED] %s', __FUNCTION__),
+		]);
 		return null;
 	}
 }

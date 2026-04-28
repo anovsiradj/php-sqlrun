@@ -11,10 +11,11 @@ class SqlrunFile extends \Illuminate\Console\Command
 
 	public function handle()
 	{
+		$dir = $_ENV['MIGRATION_DIR'];
 		$runner = new FileRunner(new LaravelDriver);
-		$runner->run("{$_ENV['FILE_DIR']}/structures.sql", false);
-		$runner->runDir("{$_ENV['FILE_DIR']}/patches");
-		$runner->run("{$_ENV['FILE_DIR']}/contents.sql", false);
+		$runner->run("{$dir}/structures.sql", false);
+		$runner->runDir("{$dir}/patches");
+		$runner->run("{$dir}/contents.sql", false);
 
 		dump($runner->driver->logs('error'));
 	}
