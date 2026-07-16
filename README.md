@@ -12,6 +12,13 @@ lihat `./tests/*.php`
 
 khusus driver Yii2,PDO tidak ada driver `mariadb` jadi harus pakai `mysql`.
 
+### rencana
+
+- `archive`: catat file sql yang belum tercatat
+- `connect`: cek koneksi database
+- `inspect`: (aku lupa untuk apa ini)
+- `schema`: expor skema jadi file sql
+
 ### migration Group
 
 - default: `basename(file)` (backward compatible)
