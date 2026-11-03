@@ -1,6 +1,6 @@
 {
     "name": "anovsiradj/sqlrun",
-    "description": "migrasi SQL satu arah",
+    "description": "PHP migrasi SQL satu-arah, Gak Pake Ribet.",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -37,7 +37,7 @@
         "ext-pdo": "*",
         "symfony/dotenv": "3.4.x-dev || @stable",
         "symfony/var-dumper": "3.4.x-dev || @stable",
-        "yiisoft/yii2": "@dev",
+        "yiisoft/yii2": "dev-master",
         "laravel/framework": ">=8"
     },
     "config": {

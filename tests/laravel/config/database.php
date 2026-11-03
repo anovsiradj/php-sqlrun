@@ -1,5 +1,7 @@
 <?php
 
+$table = 'laravel_migrations';
+
 $mysql = [
 	'host' => env('LARAVEL_HOST'),
 	'port' => env('LARAVEL_PORT'),
@@ -11,7 +13,9 @@ $mysql = [
 	'engine' => null,
 ];
 
-return [
+$version = intval(env('LARAVEL_VERSION', 999));
+
+$config = [
 	'default' => env('LARAVEL_DRIVER'),
 
 	'connections' => [
@@ -39,12 +43,18 @@ return [
 			'sslmode' => 'disable',
 		],
 	],
-
-	// <=v10
-	'migrations' => 'laravel_migrations',
-	// >=v11
-	'migrations' => [
-		'table' => 'laravel_migrations',
-		'update_date_on_publish' => true,
-	],
 ];
+
+if ($version <= 10) {
+	$config = array_merge($config, [
+		'migrations' => $table,
+	]);
+}
+if ($version >= 11) {
+	$config = array_merge($config, [
+		'migrations' => [
+			'table' => $table,
+			'update_date_on_publish' => true,
+		],
+	]);
+}
