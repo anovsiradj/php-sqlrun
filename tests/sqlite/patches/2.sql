@@ -1,0 +1,3 @@
+-- patch 2
+ALTER TABLE `user` ADD COLUMN `email` VARCHAR(256) NULL;
+ALTER TABLE `user` ADD COLUMN `phone` VARCHAR(16) NULL;

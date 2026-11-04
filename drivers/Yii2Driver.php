@@ -110,6 +110,18 @@ class Yii2Driver extends Driver
 		return (bool) $result;
 	}
 
+	public function migrationInit(): bool
+	{
+		$table = $this->migrationTable();
+		$sql = <<<SQL
+			CREATE TABLE IF NOT EXISTS {$table} (
+				version VARCHAR(180) NOT NULL PRIMARY KEY,
+				apply_time INTEGER NOT NULL
+			)
+		SQL;
+		return $this->query($sql);
+	}
+
 	public function migrationInsert($name): bool
 	{
 		if (!$this->migration) {

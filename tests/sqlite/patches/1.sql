@@ -1,0 +1,2 @@
+-- patch 1
+ALTER TABLE `user` ADD COLUMN `name` VARCHAR(256) NULL;

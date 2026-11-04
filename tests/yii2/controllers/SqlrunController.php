@@ -11,7 +11,8 @@ class SqlrunController extends \yii\console\Controller
 	{
 		$runner = new FileRunner(new Yii2Driver);
 
-		$dir = $_ENV['MIGRATION_DIR'];
+		$dir = getenv('MIGRATION_DIR') ?: __DIR__ . '/../../../tests/mysql';
+		$runner->driver->migrationInit();
 		$runner->run("{$dir}/structures.sql", false);
 		$runner->runDir("{$dir}/patches");
 		$runner->run("{$dir}/contents.sql", false);

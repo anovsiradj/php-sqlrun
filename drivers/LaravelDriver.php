@@ -95,4 +95,16 @@ class LaravelDriver extends Driver
 			'batch' => time(),
 		]);
 	}
+
+	public function migrationInit(): bool
+	{
+		$table = $this->migrationTable();
+		$sql = <<<SQL
+			CREATE TABLE IF NOT EXISTS {$table} (
+				migration VARCHAR(255) NOT NULL,
+				batch INTEGER NOT NULL
+			)
+		SQL;
+		return $this->query($sql);
+	}
 }

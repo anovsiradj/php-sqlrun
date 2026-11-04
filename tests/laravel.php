@@ -2,6 +2,11 @@
 
 require __DIR__ . '/env.php';
 
+// Bootstrap: populate $_ENV from process environment (so Laravel's env() works)
+foreach (getenv() as $key => $val) {
+    $_ENV[$key] = $val;
+}
+
 spl_autoload_register(function ($classname) {
 	if (strpos($classname, 'App\\') !== 0) {
 		return false;

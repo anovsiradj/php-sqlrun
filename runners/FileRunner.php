@@ -131,8 +131,16 @@ class FileRunner extends Runner
 			return;
 		}
 
-		$php = function () use ($file) {
-			extract((array) $this);
+		$context = [
+			'runner' => $this,
+			'driver' => $this->driver,
+			'group' => $this->migrationGroup,
+			'name' => $name,
+			'file' => $file,
+		];
+
+		$php = function () use ($file, $context) {
+			extract($context);
 			return (require $file);
 		};
 

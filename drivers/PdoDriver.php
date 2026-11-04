@@ -65,14 +65,23 @@ class PdoDriver extends Driver
 		}
 	}
 
+	public function migrationTable()
+	{
+		if (!empty($this->migrationTable)) {
+			return $this->migrationTable;
+		}
+		return 'migration';
+	}
+
 	public function migrationExist($name): bool
 	{
 		if (!$this->migration) {
 			return false;
 		}
 
+		$table = $this->migrationTable();
 		$deklar = $this->connect->prepare(<<<SQL
-			SELECT 1 from migration
+			SELECT 1 from {$table}
 			WHERE id=:id
 		SQL);
 
@@ -90,8 +99,9 @@ class PdoDriver extends Driver
 			return false;
 		}
 
+		$table = $this->migrationTable();
 		$deklar = $this->connect->prepare(<<<SQL
-			INSERT INTO migration (id, at) VALUES (:id, :at)
+			INSERT INTO {$table} (id, at) VALUES (:id, :at)
 		SQL);
 
 		$result = $deklar->execute([

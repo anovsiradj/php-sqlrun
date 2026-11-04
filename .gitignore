@@ -1,5 +1,6 @@
 /*.sublime*
 
 /vendor/
+
 /tests/.env
 /tests/.sqlite

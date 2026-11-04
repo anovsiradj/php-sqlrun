@@ -3,25 +3,25 @@
 $table = 'laravel_migrations';
 
 $mysql = [
-	'host' => env('LARAVEL_HOST'),
-	'port' => env('LARAVEL_PORT'),
-	'database' => env('LARAVEL_DBNAME'),
-	'username' => env('LARAVEL_USERNAME'),
-	'password' => env('LARAVEL_PASSWORD'),
+	'host' => env('LARAVEL_HOST', 'localhost'),
+	'port' => env('LARAVEL_PORT', '3306'),
+	'database' => env('LARAVEL_DBNAME', 'sqlrun'),
+	'username' => env('LARAVEL_USERNAME', 'root'),
+	'password' => env('LARAVEL_PASSWORD', 'password'),
 	'prefix_indexes' => true,
 	'strict' => true,
 	'engine' => null,
 ];
 
-$version = intval(env('LARAVEL_VERSION', 999));
+$version = (int) env('LARAVEL_VERSION', 999);
 
 $config = [
-	'default' => env('LARAVEL_DRIVER'),
+	'default' => env('LARAVEL_DRIVER', 'mysql'),
 
 	'connections' => [
 		'sqlite' => [
 			'driver' => 'sqlite',
-			'database' => env('SQLITE_FILE'),
+			'database' => env('SQLITE_DBFILE', __DIR__ . '/../../../tests/.sqlite'),
 			'foreign_key_constraints' => env('LARAVEL_FOREIGN_KEYS', true),
 		],
 		'mariadb' => array_merge($mysql, [
@@ -32,11 +32,11 @@ $config = [
 		]),
 		'pgsql' => [
 			'driver' => 'pgsql',
-			'host' => env('LARAVEL_HOST'),
-			'port' => env('LARAVEL_PORT'),
-			'database' => env('LARAVEL_DBNAME'),
-			'username' => env('LARAVEL_USERNAME'),
-			'password' => env('LARAVEL_PASSWORD'),
+			'host' => env('LARAVEL_HOST', 'localhost'),
+			'port' => env('LARAVEL_PORT', '5432'),
+			'database' => env('LARAVEL_DBNAME', 'sqlrun'),
+			'username' => env('LARAVEL_USERNAME', 'postgres'),
+			'password' => env('LARAVEL_PASSWORD', 'password'),
 			'charset' => 'utf8',
 			'prefix_indexes' => true,
 			'schema' => 'public',
@@ -58,3 +58,5 @@ if ($version >= 11) {
 		],
 	]);
 }
+
+return $config;

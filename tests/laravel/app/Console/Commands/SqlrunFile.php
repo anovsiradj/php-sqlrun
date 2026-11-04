@@ -11,8 +11,9 @@ class SqlrunFile extends \Illuminate\Console\Command
 
 	public function handle()
 	{
-		$dir = $_ENV['MIGRATION_DIR'];
+		$dir = getenv('MIGRATION_DIR') ?: __DIR__ . '/../../../tests/mysql';
 		$runner = new FileRunner(new LaravelDriver);
+		$runner->driver->migrationInit();
 		$runner->run("{$dir}/structures.sql", false);
 		$runner->runDir("{$dir}/patches");
 		$runner->run("{$dir}/contents.sql", false);
